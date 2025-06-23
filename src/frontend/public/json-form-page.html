@@ -31,7 +31,8 @@
     <div class="flex flex-col gap-2">
         <label class="font-semibold text-sm" for="name-input">Name</label>
         <input class="w-full p-2.5 border border-gray-300 rounded-md text-base box-border bg-white text-gray-900
-               transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600" id="name-input" placeholder="e.g., api_key"
+               transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600" id="name-input"
+               placeholder="e.g., api_key"
                type="text"/>
     </div>
 
@@ -50,14 +51,16 @@
     <div class="flex flex-col gap-2">
         <label class="font-semibold text-sm" for="description-input">Description</label>
         <textarea class="w-full p-2.5 border border-gray-300 rounded-md text-base box-border bg-white text-gray-900
-                  transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600" id="description-input"
+                  transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                  id="description-input"
                   placeholder="Describe the purpose of this input"></textarea>
     </div>
 
     <div class="flex flex-col gap-2">
         <label class="font-semibold text-sm" for="value-input">Value</label>
         <textarea class="w-full p-2.5 border border-gray-300 rounded-md text-base box-border bg-white text-gray-900
-                  transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600" id="value-input"
+                  transition-colors duration-300 dark:bg-gray-700 dark:text-gray-200 dark:border-gray-600"
+                  id="value-input"
                   placeholder="Enter the value for this input"></textarea>
     </div>
 </div>
@@ -162,7 +165,7 @@
     // This is crucial to prevent a race condition where the parent sends data
     // before the iframe's event listener is active.
     console.log("IFRAME: Content loaded. Sending 'ready' message to parent.");
-    window.parent.postMessage({type: "ready"}, PARENT_ORIGIN);
+    window.parent.postMessage({type: "ready", width: "800px", height: "500px"}, PARENT_ORIGIN);
 
 </script>
 </body>

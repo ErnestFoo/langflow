@@ -19,21 +19,17 @@ const IframeJsonForm = forwardRef<HTMLIFrameElement, IframeJsonFormProps>((props
     }
 
     return (<iframe
-            ref={ref}
-            src={get_iframe_source()}
-            title="JSON Configuration Form"
-            style={{
-                width: "100%", height: "100%",
-            }}
-            onLoad={() => {
-                console.log("Iframe loaded");
-                //setIsIframeLoading?.(false);
-                setTimeout(() => {
-                    props.setIsIframeLoading?.(false);
-                    console.log("Iframe loading complete after 6 seconds");
-                }, 6000);
-            }}
-        />);
+        ref={ref}
+        src={get_iframe_source()}
+        title="JSON Configuration Form"
+        style={{
+            width: "100%", height: "100%",
+        }}
+        onLoad={() => {
+            // console.log("Iframe loaded");
+            props.setIsIframeLoading?.(false);
+        }}
+    />);
 },);
 
 IframeJsonForm.displayName = "IframeJsonForm";

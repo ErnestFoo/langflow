@@ -64,6 +64,7 @@ export default function CustomTextAreaModal({
     const [isIframeReady, setIsIframeReady] = useState(false);
     const iframeRef = useRef<HTMLIFrameElement>(null);
     const [isIframeLoading, setIsIframeLoading] = useState(true); // To set state of loading page before iframe is ready
+    const [iframeDimensions, setIframeDimensions] = useState<{ width?: string, height?: string }>({});
     const dark = useDarkStore((state) => state.dark);
 
     // Effect to handle messages received from the iframe
@@ -78,11 +79,16 @@ export default function CustomTextAreaModal({
             switch (data.type) {
                 case "ready":
                     setIsIframeReady(true);
+                    // Store width and height if provided in the message
+                    if (data.width || data.height) {
+                        setIframeDimensions({
+                            width: data.width, height: data.height
+                        });
+                    }
                     // Send dark mode state immediately when the iframe is ready
                     if (iframeRef.current?.contentWindow) {
                         iframeRef.current.contentWindow.postMessage({
-                            type: "darkMode",
-                            payload: {dark}
+                            type: "darkMode", payload: {dark}
                         }, IFRAME_ORIGIN,);
                     }
                     break;
@@ -143,80 +149,75 @@ export default function CustomTextAreaModal({
     };
 
     return (<BaseModal
-            onChangeOpenModal={() => {
-            }}
-            open={modalOpen}
-            setOpen={setModalOpen}
-            size="large"
-        >
-            <BaseModal.Trigger disable={disabled} asChild>
-                {children}
-            </BaseModal.Trigger>
-            <BaseModal.Header>
-                <div className="flex w-full items-start gap-3">
-                    <div className="flex">
-                        <IconComponent
-                            name="Settings"
-                            className="h-6 w-6 pr-1 text-primary"
-                            aria-hidden="true"
-                        />
-                        <span className="pl-2" data-testid="custom-modal-title">
+        onChangeOpenModal={() => {
+        }}
+        open={modalOpen}
+        setOpen={setModalOpen}
+        size="large"
+        customWidth={iframeDimensions.width}
+        customHeight={iframeDimensions.height}
+    >
+        <BaseModal.Trigger disable={disabled} asChild>
+            {children}
+        </BaseModal.Trigger>
+        <BaseModal.Header>
+            <div className="flex w-full items-start gap-3">
+                <div className="flex">
+                    <IconComponent
+                        name="Settings"
+                        className="h-6 w-6 pr-1 text-primary"
+                        aria-hidden="true"
+                    />
+                    <span className="pl-2" data-testid="custom-modal-title">
               Configure Input
             </span>
-                    </div>
                 </div>
-            </BaseModal.Header>
-            <BaseModal.Content>
-                <div className="relative h-[500px] w-full">
-                    {isIframeLoading && (
-                        // <div className="absolute inset-0 z-10 flex items-center justify-center bg-white backdrop-blur-sm">
-                        //   <div className="animate-pulse text-sm text-gray-600">
-                        //     Loading iframe...
-                        //   </div>
-                        // </div>
-                        <div className="absolute inset-0 z-20 flex items-center justify-center bg-white">
-                            <iframe width="100%" height="100%"
-                                    src="https://www.youtube.com/embed/pKl61ks-Y3s?si=t9J8GeL2GEdf1iC-&autoplay=1"
-                                    title="YouTube video player"
-                                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                                    referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>
-                        </div>)}
-                    <IframeJsonForm
-                        ref={iframeRef}
-                        modal={modal}
-                        setIsIframeLoading={setIsIframeLoading}
-                    />
-                </div>
-            </BaseModal.Content>
+            </div>
+        </BaseModal.Header>
+        <BaseModal.Content>
+            <div className="relative h-[500px] w-full">
+                {isIframeLoading && (
+                    <div className="absolute inset-0 z-10 flex items-center justify-center bg-white backdrop-blur-sm">
+                        <div className="animate-pulse text-sm text-gray-600">
+                            Loading iframe...
+                        </div>
+                    </div>)}
+                <IframeJsonForm
+                    ref={iframeRef}
+                    modal={modal}
+                    setIsIframeLoading={setIsIframeLoading}
+                />
+            </div>
+        </BaseModal.Content>
 
-            <BaseModal.Footer>
-                <div className="flex w-full shrink-0 items-end justify-between">
+        <BaseModal.Footer>
+            <div className="flex w-full shrink-0 items-end justify-between">
+                <Button
+                    variant="outline"
+                    onClick={handleReset}
+                    disabled={readonly}
+                    data-testid="reset-button"
+                >
+                    Reset
+                </Button>
+                <div className="flex gap-2">
                     <Button
                         variant="outline"
-                        onClick={handleReset}
-                        disabled={readonly}
-                        data-testid="reset-button"
+                        onClick={() => setModalOpen(false)}
+                        data-testid="cancel-button"
                     >
-                        Reset
+                        Cancel
                     </Button>
-                    <div className="flex gap-2">
-                        <Button
-                            variant="outline"
-                            onClick={() => setModalOpen(false)}
-                            data-testid="cancel-button"
-                        >
-                            Cancel
-                        </Button>
-                        <Button
-                            onClick={() => iframeRef.current?.contentWindow?.postMessage({type: "requestSave"}, // Ask iframe to save
-                                IFRAME_ORIGIN,)}
-                            disabled={readonly}
-                            data-testid="save-button"
-                        >
-                            Save JSON
-                        </Button>
-                    </div>
+                    <Button
+                        onClick={() => iframeRef.current?.contentWindow?.postMessage({type: "requestSave"}, // Ask iframe to save
+                            IFRAME_ORIGIN,)}
+                        disabled={readonly}
+                        data-testid="save-button"
+                    >
+                        Save JSON
+                    </Button>
                 </div>
-            </BaseModal.Footer>
-        </BaseModal>);
+            </div>
+        </BaseModal.Footer>
+    </BaseModal>);
 }
