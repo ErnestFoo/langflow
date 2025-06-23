@@ -30,6 +30,7 @@ from langflow.io import (
     StrInput,
     TabInput,
     TableInput,
+    CustomInput
 )  # noqa: F401
 from langflow.schema import Data, dotdict
 from langflow.schema.dataframe import DataFrame
@@ -43,10 +44,26 @@ class CustomComponent(Component):
     documentation: str = "https://docs.langflow.org/components-custom-components"
     icon = "📝"
     name = "Popup"
+    
+    form_cache: Dict[str, Any] | None = formpopulate.JSONFileReader().safe_read()
 
     inputs = [
         MultilineInput(name="title", display_name="Form Title", required=True),
-        DropdownInput(name="color", display_name="Favorite Color", options=["Red", "Green", "Blue"], value="Red"),
+        DropdownInput(
+            name="form",
+            display_name="Form to display",
+            options=form_cache.keys(),
+            value= "",
+            real_time_refresh=True,
+            advanced=True
+        ),
+        CustomInput(
+            name="banana",
+            display_name="Modal to Display",
+            value="",
+            modal="",
+            real_time_refresh=True
+            ),
         BoolInput(name="subscribe", display_name="Subscribe to newsletter", value=False),
         MultiselectInput(
             name="interests",
@@ -83,11 +100,24 @@ class CustomComponent(Component):
         Returns:
             dotdict: Updated configuration.
         """
+        print(field_name+ " " + field_value)
+        if field_name == "form":
+            
+            # Get the selected color
+            selected_form = field_value
+
+            # Lookup the corresponding value from the form_cache
+            modal_content = self.form_cache.get(selected_form, "")
+            print("modal_content: "+ modal_content)
+
+            # Update the CustomInput modal value
+            build_config["banana"]["modal"] = modal_content
+            print("Modal content changed")
+                
         return build_config
 
     async def build_output(self) -> Data:
-        form = formpopulate.JSONFileReader().safe_read()
-
-        text = f"Title: {self.title}, Color: {self.color}, Subscribe: {self.subscribe}, Test: {form}"
-        self.status = "Form submitted"
+        modal_content = self.form_cache.get(self.color, "")
+        text = f"Title: {self.title}, Color: {self.color}, Subscribe: {self.subscribe}, Selected: {self.form_cache.get(self.color)}, Modal: {self.banana}"
+        self.status = f"Modal preview: {modal_content}"
         return Data(content=text)
