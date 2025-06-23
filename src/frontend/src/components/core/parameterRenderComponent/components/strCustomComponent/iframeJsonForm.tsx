@@ -14,7 +14,7 @@ const IframeJsonForm = forwardRef<HTMLIFrameElement, IframeJsonFormProps>((props
     const get_iframe_source = () => {
         switch (props.modal) {
             default:
-                return "/json-form-page.html"
+                return props.modal || "Error: No modal provided";
         }
     }
 

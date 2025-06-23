@@ -1,0 +1,12 @@
+{
+    "Contact Form": "/json-form-page.html",
+    "Feedback Form": "https://example.com/",
+    "Registration Form": "/another_form.html",
+    "Login Form": "https://example.com/forms/login",
+    "Survey Form": "https://example.com/forms/survey",
+    "Support Request Form": "https://example.com/forms/support",
+    "Newsletter Signup Form": "https://example.com/forms/newsletter",
+    "Order Form": "https://example.com/forms/order",
+    "Bug Report Form": "https://example.com/forms/bug-report",
+    "Event RSVP Form": "https://example.com/forms/rsvp"
+}

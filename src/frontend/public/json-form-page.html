@@ -4,6 +4,23 @@
     <meta charset="UTF-8">
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <title>JSON Configuration Form</title>
+    <script>
+        // --- CONFIGURATION ---
+        // This MUST match the origin of your React application.
+        // For local development, this is typically 'http://localhost:3000' or similar.
+        // For production, it would be 'https://your-app.com'.
+        // window.location.origin from the parent is passed for security.
+        const PARENT_ORIGIN = new URL(document.referrer).origin;
+
+        // --- INITIALIZATION ---
+
+        // Notify the parent window that the iframe is ready to receive messages.
+        // This is crucial to prevent a race condition where the parent sends data
+        // before the iframe's event listener is active.
+        console.log("IFRAME: Content loaded. Sending 'ready' message to parent.");
+        window.parent.postMessage({type: "ready", width: "800px", height: "500px"}, PARENT_ORIGIN);
+    </script>
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -63,16 +80,25 @@
                   id="value-input"
                   placeholder="Enter the value for this input"></textarea>
     </div>
+
+    <div> Resize 
+        <Button class="w-full p-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-300 dark:bg-blue-700 dark:hover:bg-blue-800"
+                onclick="sendResizeMessage(1.5)">
+            <span class="text-sm font-semibold">Resize Iframe by 150%</span> <br>
+            <span class="text-xs text-gray-400"> (Sends resize message to parent)</span>
+        </Button>
+    </div>
+
+    <div> Resize 
+        <Button class="w-full p-2.5 bg-blue-500 text-white rounded-md hover:bg-blue-600 transition-colors duration-300 dark:bg-blue-700 dark:hover:bg-blue-800"
+                onclick="sendResizeMessage(0.5)">
+            <span class="text-sm font-semibold">Resize Iframe by 80%</span> <br>
+            <span class="text-xs text-gray-400"> (Sends resize message to parent)</span>
+        </Button>
+    </div>
 </div>
 
 <script>
-    // --- CONFIGURATION ---
-    // This MUST match the origin of your React application.
-    // For local development, this is typically 'http://localhost:3000' or similar.
-    // For production, it would be 'https://your-app.com'.
-    // window.location.origin from the parent is passed for security.
-    const PARENT_ORIGIN = new URL(document.referrer).origin;
-
     // --- DOM ELEMENT REFERENCES ---
     const nameInput = document.getElementById("name-input");
     const typeSelect = document.getElementById("type-select");
@@ -80,6 +106,15 @@
     const valueInput = document.getElementById("value-input");
 
     // --- HELPER FUNCTIONS ---
+
+    // Function to send resize message using PostMessage by % of current body size
+    function sendResizeMessage(resizePercentage = 1) {
+        const width = (document.body.scrollWidth * resizePercentage) + "px";
+        const height = (document.body.scrollHeight * resizePercentage) + "px";
+        
+        console.log(`IFRAME: Sending resize message to parent with width: ${width}, height: ${height}`);
+        window.parent.postMessage({type: "ready", width, height}, PARENT_ORIGIN);
+    }
 
     /**
      * Gathers data from form fields and returns it as an object.
@@ -93,7 +128,7 @@
             value: valueInput.value,
         };
     }
-
+    
     /**
      * Populates the form fields with data received from the parent.
      * @param {object} data - The data object.
@@ -159,13 +194,7 @@
         }
     });
 
-    // --- INITIALIZATION ---
-
-    // Notify the parent window that the iframe is ready to receive messages.
-    // This is crucial to prevent a race condition where the parent sends data
-    // before the iframe's event listener is active.
-    console.log("IFRAME: Content loaded. Sending 'ready' message to parent.");
-    window.parent.postMessage({type: "ready", width: "800px", height: "500px"}, PARENT_ORIGIN);
+    
 
 </script>
 </body>
